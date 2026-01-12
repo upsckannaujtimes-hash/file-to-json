@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vue AI Frontend</title>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    input, textarea {
+      padding: 8px;
+      width: 90%;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 8px 16px;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <h2>Vue AI Frontend</h2>
+
+    <textarea v-model="query" placeholder="Enter text to convert to JSON"></textarea>
+
+    <br />
+
+    <button @click="send">Send</button>
+
+    <pre v-if="loading">Loading...</pre>
+    <pre v-if="result">{{ result }}</pre>
+  </div>
+
+  <script>
+    const API_URL = "https://YOUR-RENDER-APP.onrender.com";
+
+    const App = {
+      data() {
+        return {
+          query: "",
+          result: "",
+          loading: false
+        };
+      },
+      methods: {
+        async send() {
+          this.loading = true;
+          this.result = "";
+          try {
+            const res = await fetch(API_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ query: this.query })
+            });
+            const data = await res.json();
+            this.result = JSON.stringify(data, null, 2);
+          } catch (err) {
+            this.result = "Error: Could not reach backend";
+          } finally {
+            this.loading = false;
+          }
+        }
+      }
+    };
+
+    Vue.createApp(App).mount("#app");
+  </script>
+  
+</body>
+</html>
